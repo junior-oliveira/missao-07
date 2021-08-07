@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+from sklearn.model_selection import train_test_split
 def ler_base_treinamento():
   dados_treinamento = pd.read_csv('bases_de_dados/train.csv')
   return dados_treinamento
@@ -39,3 +39,9 @@ def get_atributos_teste():
     atributos_teste = dados_teste.drop(['id'], axis=1)
     return atributos_teste
 
+
+def get_amostra_base(percentual=0.01):
+    dados_treinamento = ler_base_treinamento()
+    rotulos_treinamento = get_rotulos_treinamento()
+    X_train, X_test, y_train, y_test = train_test_split(dados_treinamento, rotulos_treinamento, train_size=percentual, stratify=rotulos_treinamento)
+    return [X_train, y_train]
