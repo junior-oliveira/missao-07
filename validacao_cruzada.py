@@ -1,7 +1,8 @@
 import numpy as np
 from sklearn.model_selection import cross_val_score, train_test_split, cross_validate, RepeatedStratifiedKFold
 from sklearn.model_selection import StratifiedKFold
-
+import pandas as pd
+import time 
 def validacao_cruzada(X,y, model, n_splits=5):
     'Do split dataset and calculate cross_score'
     X = np.array(X)
@@ -22,10 +23,19 @@ def validacao_cruzada(X,y, model, n_splits=5):
     return cross_validation_score
 
 def validacao_5x2(model, X, y):
+    t = time.time()    
+    print('A validação começou: ', model)
     X = np.array(X)
     y = np.array(y)
     cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=2, random_state=12345)
     model_score = cross_validate(model, X, y, cv = cv,
                         scoring=['accuracy','precision_macro', 'recall_macro', 'f1_macro'],
                         return_train_score=True)
-    return model_score
+    df=pd.DataFrame.from_dict(model_score,orient='index')
+    summary_ave_data = df.copy()
+    summary_ave_data['mean'] = summary_ave_data.mean(numeric_only=True, axis=1)
+    summary_ave_data
+    segundos = time.time() - t
+    print('A validação de', model, ' terminou e levou ', segundos, ' segundos!')
+
+    return summary_ave_data
